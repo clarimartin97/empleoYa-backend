@@ -134,6 +134,22 @@ app.post("/trabajos", (req, res) => {
     console.log(nuevoTrabajo)
 })
 
+
+
+
+app.post("/postulacion", (req, res) => {
+    console.log(" holaaa")
+    const nuevaPostulacion = new Postulacion({
+        idTrabajo: req.body.idTrabajo,
+        idUsuario: req.body.idUsuario,
+    });
+
+    nuevaPostulacion.save().then(postulacion => {
+        res.json({ postulacion })
+
+    });
+})
+
 app.delete("/trabajos/:idEliminar", (req, res) => {
     console.log(req.params.idEliminar);
     let idEliminar = req.params.idEliminar;
