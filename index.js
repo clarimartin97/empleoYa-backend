@@ -24,6 +24,7 @@ let Trabajo = require("./modelos/Trabajo.js");
 let Usuario = require("./modelos/Usuario.js");
 let Formacion = require("./modelos/Formacion.js");
 let Habilidades = require("./modelos/Habilidades.js");
+let Postulacion = require("./modelos/Postulacion.js");
 //
 app.use(express.json());
 
@@ -48,6 +49,7 @@ app.get("/usuarios", (req, res) => {
     }).populate('habilidades', 'title').populate('formaciones').populate({ path: 'experienciaProfesional', populate: { path: 'categoria' } })
     /////caapaz de la experiencia quireo q solo me traiga el nombre?
 })
+
 app.post("/usuarios", (req, res) => {
     const nuevasHabilidades = new Habilidades({
         title: req.body.habilidades
@@ -80,6 +82,69 @@ app.post("/usuarios", (req, res) => {
 
     });
     console.log(nuevoUsuario)
+})
+
+app.get("/trabajos/:idUsuario", (req, res) => {
+    let idUsuario = req.params.idUsuario
+    Trabajo.find((err, trabajos) => {
+        if (err) {
+            return console.log(err)
+        }
+        else {
+            Postulacion.find({
+                idUsuario: idUsuario
+            },
+                (err, postulacion) => {
+                    if (err) {
+                        return console.log(err)
+                    }
+                    else {
+                        const idsTrabajo = postulacion.map(function (e) { return e.idTrabajo })
+                        const resultado = trabajos.map(function (element) {
+                            return {
+                                ...element._doc,
+                                estaPostulado: idsTrabajo.includes(element._id.toString())
+                            }
+                        })
+                        return res.json(resultado)
+                    }
+                })
+        }
+    })
+})
+
+
+app.post("/trabajos", (req, res) => {
+    const nuevoTrabajo = new Trabajo({
+        nombreDelPuesto: req.body.nombreDelPuesto,
+        duracion: req.body.duracion,
+        ubicacion: req.body.ubicacion,
+        nombreDeLaEmpresa: req.body.nombreDeLaEmpresa,
+        categoria: req.body.categoryId,
+        requisitos: req.body.requisitos,
+        descripcionDelPuesto: req.body.descripcionDelPuesto,
+        trabajoActivo: req.body.trabajoActivo,
+        modalidad: req.body.modalidad,
+    });
+
+    nuevoTrabajo.save().then(trabajo => {
+        res.json({ trabajo })
+
+    });
+    console.log(nuevoTrabajo)
+})
+
+app.delete("/trabajos/:idEliminar", (req, res) => {
+    console.log(req.params.idEliminar);
+    let idEliminar = req.params.idEliminar;
+    console.log(idEliminar);
+    Trabajo.findByIdAndDelete(idEliminar, (err, trabajo) => {
+        if (err) {
+            console.log(err)
+        } else {
+            res.json(trabajo)
+        }
+    })
 })
 
 app.listen(port, () => {
