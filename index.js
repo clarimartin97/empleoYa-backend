@@ -116,8 +116,9 @@ app.get("/trabajos/:idUsuario/:ubicacion/:nombreDelPuesto", (req, res) => {
     let idUsuario = req.params.idUsuario
     let ubicacion = req.params.ubicacion
     let nombreDelPuesto = req.params.nombreDelPuesto
-    console.log(idUsuario, ubicacion, nombreDelPuesto)
-    Trabajo.find({ ubicacion: ubicacion, nombreDelPuesto: nombreDelPuesto }, (err, trabajos) => {
+    const ubicacionRegex = new RegExp(ubicacion, "i")
+    const nombreDelPuestoRegex = new RegExp(nombreDelPuesto, "i")
+    Trabajo.find({ ubicacion: ubicacionRegex, nombreDelPuesto: nombreDelPuestoRegex }, (err, trabajos) => {
         if (err) {
             return console.log(err)
         }
