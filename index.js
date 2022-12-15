@@ -47,7 +47,7 @@ app.get("/usuarios", (req, res) => {
     /////caapaz de la experiencia quireo q solo me traiga el nombre?
 })
 
-app.post("/usuarios", (req, res) => {
+app.post("/signup", (req, res) => {
     console.log("hello")
     console.log(req.body)
     const nuevoUsuario = new Usuario({
@@ -56,7 +56,7 @@ app.post("/usuarios", (req, res) => {
         mail: req.body.mail,
         titulo: "",
         habilidades: [],
-        contraseña: req.body.contraseña,
+        contraseña: req.body.contrasena,
         formaciones: [],
         experienciaProfesional: []
     });
@@ -74,7 +74,7 @@ app.post("/login", (req, res) => {
     console.log(req.body)
     Usuario.findOne({
         mail: req.body.mail,
-        contraseña: req.body.contraseña
+        contraseña: req.body.contrasena
     }, (err, usuario) => {
         console.log(usuario);
         console.log(err);
@@ -165,9 +165,6 @@ app.post("/trabajos", (req, res) => {
     });
     console.log(nuevoTrabajo)
 })
-
-
-
 
 app.post("/postulacion", (req, res) => {
     const nuevaPostulacion = new Postulacion({
