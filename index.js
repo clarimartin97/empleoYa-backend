@@ -112,6 +112,38 @@ app.get("/trabajos/:idUsuario", (req, res) => {
     })
 })
 
+app.get("/trabajos/:idUsuario/:ubicacion/:nombreDelPuesto", (req, res) => {
+    let idUsuario = req.params.idUsuario
+    let ubicacion = req.params.ubicacion
+    let nombreDelPuesto = req.params.nombreDelPuesto
+    console.log(idUsuario, ubicacion, nombreDelPuesto)
+    Trabajo.find({ ubicacion: ubicacion, nombreDelPuesto: nombreDelPuesto }, (err, trabajos) => {
+        if (err) {
+            return console.log(err)
+        }
+        else {
+            Postulacion.find({
+                idUsuario: idUsuario
+            },
+                (err, postulacion) => {
+                    if (err) {
+                        return console.log(err)
+                    }
+                    else {
+                        const idsTrabajo = postulacion.map(function (e) { return e.idTrabajo })
+                        const resultado = trabajos.map(function (element) {
+                            return {
+                                ...element._doc,
+                                estaPostulado: idsTrabajo.includes(element._id.toString())
+                            }
+                        })
+                        return res.json(resultado)
+                    }
+                })
+        }
+    })
+})
+
 
 app.post("/trabajos", (req, res) => {
     const nuevoTrabajo = new Trabajo({
@@ -137,7 +169,6 @@ app.post("/trabajos", (req, res) => {
 
 
 app.post("/postulacion", (req, res) => {
-    console.log(" holaaa")
     const nuevaPostulacion = new Postulacion({
         idTrabajo: req.body.idTrabajo,
         idUsuario: req.body.idUsuario,
