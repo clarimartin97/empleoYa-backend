@@ -8,7 +8,7 @@ let usuarioSchema = new schema({
     formaciones: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Formacion' }],
     habilidades: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Habilidades' }],
     titulo: String,
-    correo: String,
+    mail: String,
     contraseña: String
 })
 let Usuario = mongoose.model("Usuario", usuarioSchema)

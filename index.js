@@ -53,7 +53,7 @@ app.post("/usuarios", (req, res) => {
     const nuevoUsuario = new Usuario({
         nombre: req.body.nombre,
         apellido: req.body.apellido,
-        correo: req.body.correoElectronico,
+        mail: req.body.mail,
         titulo: "",
         habilidades: [],
         contraseña: req.body.contraseña,
@@ -67,6 +67,20 @@ app.post("/usuarios", (req, res) => {
 
     });
     console.log(nuevoUsuario)
+})
+
+app.post("/login", (req, res) => {
+    console.log("hello")
+    console.log(req.body)
+    Usuario.findOne({
+        mail: req.body.mail,
+        contraseña: req.body.contraseña
+    }, (err, usuario) => {
+        console.log(usuario);
+        console.log(err);
+        if (err || usuario == null) res.json({ error: true })
+        else res.json({ ...usuario._doc })
+    })
 })
 
 app.get("/trabajos/:idUsuario", (req, res) => {
