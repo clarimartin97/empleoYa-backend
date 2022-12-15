@@ -19,11 +19,8 @@ let db = mongoose.connection;
 db.once("open", () => console.log("conectado a la base"))
 
 let Categoria = require("./modelos/Categoria.js");
-let Experiencia = require("./modelos/Experiencia.js");
 let Trabajo = require("./modelos/Trabajo.js");
 let Usuario = require("./modelos/Usuario.js");
-let Formacion = require("./modelos/Formacion.js");
-let Habilidades = require("./modelos/Habilidades.js");
 let Postulacion = require("./modelos/Postulacion.js");
 //
 app.use(express.json());
@@ -46,39 +43,27 @@ app.get("/usuarios", (req, res) => {
                 usuarios
             )
         }
-    }).populate('habilidades', 'title').populate('formaciones').populate({ path: 'experienciaProfesional', populate: { path: 'categoria' } })
+    })
     /////caapaz de la experiencia quireo q solo me traiga el nombre?
 })
 
 app.post("/usuarios", (req, res) => {
-    const nuevasHabilidades = new Habilidades({
-        title: req.body.habilidades
-    })
-    const nuevasFormaciones = new Formacion({
-        title: req.body.formaciones
-    })
-    const nuevasExperienciasProfesionales = new Experiencia({
-        categoria: req.body.categoryId,
-        nombreDelPuesto: req.body.nombreDelPuesto,
-        fechaInicio: req.body.fechaInicio,
-        fechaFin: req.body.fechaFin
-    })
+    console.log("hello")
+    console.log(req.body)
     const nuevoUsuario = new Usuario({
         nombre: req.body.nombre,
         apellido: req.body.apellido,
         correo: req.body.correoElectronico,
-        titulo: req.body.titulo,
-        habilidades: [nuevasHabilidades._id],
+        titulo: "",
+        habilidades: [],
         contraseña: req.body.contraseña,
-        formaciones: [nuevasFormaciones._id],
-        experienciaProfesional: [nuevasExperienciasProfesionales._id]
+        formaciones: [],
+        experienciaProfesional: []
     });
-    nuevasHabilidades.save();
-    nuevasFormaciones.save();
-    nuevasExperienciasProfesionales.save();
 
-    nuevoUsuario.save().then(user => {
-        res.json({ user })
+    nuevoUsuario.save((err, usuario) => {
+        console.log(err)
+        res.json({ ...usuario, error: err })
 
     });
     console.log(nuevoUsuario)
