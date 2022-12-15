@@ -91,14 +91,14 @@ app.get("/trabajos/:idUsuario", (req, res) => {
         }
         else {
             Postulacion.find({
-                idUsuario: idUsuario
+                usuario: idUsuario
             },
                 (err, postulacion) => {
                     if (err) {
                         return console.log(err)
                     }
                     else {
-                        const idsTrabajo = postulacion.map(function (e) { return e.idTrabajo })
+                        const idsTrabajo = postulacion.map(function (e) { return e.trabajo.toString() })
                         const resultado = trabajos.map(function (element) {
                             return {
                                 ...element._doc,
@@ -124,14 +124,14 @@ app.get("/trabajos/:idUsuario/:ubicacion/:nombreDelPuesto", (req, res) => {
         }
         else {
             Postulacion.find({
-                idUsuario: idUsuario
+                usuario: idUsuario
             },
                 (err, postulacion) => {
                     if (err) {
                         return console.log(err)
                     }
                     else {
-                        const idsTrabajo = postulacion.map(function (e) { return e.idTrabajo })
+                        const idsTrabajo = postulacion.map(function (e) { return e.trabajo.toString() })
                         const resultado = trabajos.map(function (element) {
                             return {
                                 ...element._doc,
@@ -168,14 +168,41 @@ app.post("/trabajos", (req, res) => {
 
 app.post("/postulacion", (req, res) => {
     const nuevaPostulacion = new Postulacion({
-        idTrabajo: req.body.idTrabajo,
-        idUsuario: req.body.idUsuario,
+        trabajo: req.body.idTrabajo,
+        usuario: req.body.idUsuario,
     });
 
     nuevaPostulacion.save().then(postulacion => {
         res.json({ postulacion })
 
     });
+})
+
+app.get("/postulaciones/:idUsuario", (req, res) => {
+    let idUsuario = req.params.idUsuario
+    Postulacion.find({ usuario: idUsuario })
+        .populate('trabajo')
+        .exec(function (err, postulacion) {
+            if (err) {
+                return console.log(err)
+            }
+            else {
+                console.log(postulacion);
+                return res.json(postulacion)
+            }
+        });
+})
+
+app.delete("/postulacion/:idEliminar", (req, res) => {
+    let idEliminar = req.params.idEliminar;
+    console.log(idEliminar);
+    Postulacion.findByIdAndDelete(idEliminar, (err, postulacion) => {
+        if (err) {
+            console.log(err)
+        } else {
+            res.json(postulacion)
+        }
+    })
 })
 
 app.delete("/trabajos/:idEliminar", (req, res) => {
