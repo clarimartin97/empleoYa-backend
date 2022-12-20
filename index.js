@@ -50,23 +50,35 @@ app.get("/usuarios", (req, res) => {
 app.post("/signup", (req, res) => {
     console.log("hello")
     console.log(req.body)
-    const nuevoUsuario = new Usuario({
-        nombre: req.body.nombre,
-        apellido: req.body.apellido,
-        mail: req.body.mail,
-        titulo: "",
-        habilidades: [],
-        contraseña: req.body.contrasena,
-        formaciones: [],
-        experienciaProfesional: []
-    });
+    Usuario.findOne({
+        mail: req.body.mail
+    }, (err, usuario) => {
+        if (err || usuario == null) {
 
-    nuevoUsuario.save((err, usuario) => {
-        console.log(err)
-        res.json({ ...usuario, error: err })
+            const nuevoUsuario = new Usuario({
+                nombre: req.body.nombre,
+                apellido: req.body.apellido,
+                mail: req.body.mail,
+                titulo: "",
+                habilidades: [],
+                contraseña: req.body.contrasena,
+                formaciones: [],
+                experienciaProfesional: []
+            });
 
-    });
-    console.log(nuevoUsuario)
+            nuevoUsuario.save((err, usuario) => {
+                console.log(err)
+                res.json({ ...usuario, error: err })
+
+            });
+            console.log(nuevoUsuario)
+        }
+        else {
+
+            res.json({ error: "usuario_ya_existe" })
+
+        }
+    })
 })
 
 app.post("/login", (req, res) => {
