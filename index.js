@@ -18,7 +18,6 @@ let db = mongoose.connection;
 
 db.once("open", () => console.log("conectado a la base"))
 
-let Categoria = require("./modelos/Categoria.js");
 let Trabajo = require("./modelos/Trabajo.js");
 let Usuario = require("./modelos/Usuario.js");
 let Postulacion = require("./modelos/Postulacion.js");
@@ -164,7 +163,6 @@ app.post("/trabajos", (req, res) => {
         duracion: req.body.duracion,
         ubicacion: req.body.ubicacion,
         nombreDeLaEmpresa: req.body.nombreDeLaEmpresa,
-        categoria: req.body.categoryId,
         requisitos: req.body.requisitos,
         descripcionDelPuesto: req.body.descripcionDelPuesto,
         trabajoActivo: req.body.trabajoActivo,

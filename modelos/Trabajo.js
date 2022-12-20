@@ -6,7 +6,6 @@ let trabajoSchema = new schema({
     duracion: String,
     ubicacion: String,
     nombreDeLaEmpresa: String,
-    categoria: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Categoria' }],
     requisitos: String,
     descripcionDelPuesto: String,
     trabajoActivo: Boolean,
