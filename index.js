@@ -21,6 +21,9 @@ db.once("open", () => console.log("conectado a la base"))
 let Trabajo = require("./modelos/Trabajo.js");
 let Usuario = require("./modelos/Usuario.js");
 let Postulacion = require("./modelos/Postulacion.js");
+let Formacion = require("./modelos/Formacion.js");
+let Habilidad = require("./modelos/Habilidad.js");
+let ExperienciaProfesional = require("./modelos/ExperienciaProfesional.js");
 //
 app.use(express.json());
 
@@ -31,18 +34,21 @@ app.get("/", (req, res) => {
 ///// get cn los trabajos   
 
 
-app.get("/usuarios", (req, res) => {
-    Usuario.find((err, usuarios) => {
-        if (err) {
-            return console.log(err)
-        }
-        else {
-            console.log(usuarios);
-            return res.json(
-                usuarios
-            )
-        }
-    })
+app.get("/usuarios/:idUsuario", (req, res) => {
+    Usuario.findById(req.params.idUsuario)
+        // .populate('experienciaProfesional')
+        .populate('habilidades')
+        // .populate('formaciones')
+        .exec(function (err, usuario) {
+            console.log(usuario)
+            if (err) {
+                return res.json(err)
+            }
+            else {
+                console.log(usuario);
+                return res.json(usuario)
+            }
+        });
     /////caapaz de la experiencia quireo q solo me traiga el nombre?
 })
 
@@ -96,6 +102,7 @@ app.post("/login", (req, res) => {
 
 app.get("/trabajos/:idUsuario", (req, res) => {
     let idUsuario = req.params.idUsuario
+    console.log(idUsuario)
     Trabajo.find((err, trabajos) => {
         if (err) {
             return console.log(err)
@@ -105,6 +112,7 @@ app.get("/trabajos/:idUsuario", (req, res) => {
                 usuario: idUsuario
             },
                 (err, postulacion) => {
+                    console.log(postulacion)
                     if (err) {
                         return console.log(err)
                     }
@@ -116,6 +124,7 @@ app.get("/trabajos/:idUsuario", (req, res) => {
                                 estaPostulado: idsTrabajo.includes(element._id.toString())
                             }
                         })
+                        console.log(resultado)
                         return res.json(resultado)
                     }
                 })
@@ -190,9 +199,11 @@ app.post("/postulacion", (req, res) => {
 
 app.get("/postulaciones/:idUsuario", (req, res) => {
     let idUsuario = req.params.idUsuario
+    console.log(idUsuario)
     Postulacion.find({ usuario: idUsuario })
         .populate('trabajo')
         .exec(function (err, postulacion) {
+            console.log(postulacion)
             if (err) {
                 return console.log(err)
             }
