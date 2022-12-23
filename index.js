@@ -29,7 +29,6 @@ app.get("/", (req, res) => {
     res.json({ mensaje: "Uruguay es bolso" });
 })
 
-///// get cn los trabajos   
 
 
 app.get("/usuarios/:idUsuario", (req, res) => {
@@ -44,7 +43,6 @@ app.get("/usuarios/:idUsuario", (req, res) => {
                 return res.json(usuario)
             }
         });
-    /////caapaz de la experiencia quireo q solo me traiga el nombre?
 })
 
 app.post("/signup", (req, res) => {
@@ -159,14 +157,46 @@ app.get("/trabajos/:idUsuario/:ubicacion/:nombreDelPuesto", (req, res) => {
     })
 })
 
-app.patch("/usuario/:id", function (req, res) {
+app.patch("/habilidades/:id", function (req, res) {
     var id = req.params.id;
     var nuevasHabilidades = req.body.habilidades
     console.log(nuevasHabilidades)
-    Usuario.findByIdAndUpdate(id, { habilidades: nuevasHabilidades }, function (err, usuario) {
-        return res.json({ usuario: { ...usuario, habilidades: nuevasHabilidades }, err })
+    Usuario.findByIdAndUpdate(id, { habilidades: nuevasHabilidades }).populate('formaciones')
+        .exec(function (err, usuario) {
+            return res.json({ usuario: { ...usuario._doc, habilidades: nuevasHabilidades }, err })
+        });
+});
+app.post("/formaciones/:id", function (req, res) {
+    var id = req.params.id;
+
+    const nuevaFormacion = new Formacion({
+        fechaInicio: req.body.formacion.fechaInicio,
+        fechaFin: req.body.formacion.fechaFin,
+        institucion: req.body.formacion.institucion,
+
+    })
+
+    console.log(nuevaFormacion)
+
+    nuevaFormacion.save((err, f) => {
+        console.log(f)
+        if (err) {
+            return res.json(err)
+        }
+        else {
+            Usuario.findByIdAndUpdate(id, { $push: { formaciones: f } })
+                .populate('formaciones')
+                .exec(function (err, usuario) {
+                    console.log(usuario)
+                    return res.json({ usuario: { ...usuario._doc, formaciones: [...usuario._doc.formaciones, nuevaFormacion] }, err })
+                });
+        }
     });
 });
+
+
+
+
 
 app.post("/trabajos", (req, res) => {
     const nuevoTrabajo = new Trabajo({
@@ -237,6 +267,29 @@ app.delete("/trabajos/:idEliminar", (req, res) => {
             console.log(err)
         } else {
             res.json(trabajo)
+        }
+    })
+})
+app.delete("/formaciones/:idFormacion/:idUsuario", (req, res) => {
+    console.log(req.params.idFormacion);
+    let idEliminar = req.params.idFormacion;
+    let idUsuario = req.params.idUsuario;
+    Formacion.findByIdAndDelete(idEliminar, (err, formacion) => {
+        console.log(formacion)
+        if (err) {
+            return res.json(err)
+        } else {
+            Usuario.findByIdAndUpdate(idUsuario, { $pull: { formaciones: idEliminar } })
+                .populate('formaciones')
+                .exec(function (err2, usuario) {
+                    console.log(err2)
+                    if (err2)
+                        return res.json(err2)
+                    console.log(usuario)
+                    const lista = usuario._doc.formaciones.filter(x => x != formacion)
+                    console.log(lista)
+                    return res.json({ usuario: { ...usuario._doc, formaciones: lista }, err })
+                });
         }
     })
 })
