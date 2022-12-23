@@ -22,8 +22,6 @@ let Trabajo = require("./modelos/Trabajo.js");
 let Usuario = require("./modelos/Usuario.js");
 let Postulacion = require("./modelos/Postulacion.js");
 let Formacion = require("./modelos/Formacion.js");
-let Habilidad = require("./modelos/Habilidad.js");
-let ExperienciaProfesional = require("./modelos/ExperienciaProfesional.js");
 //
 app.use(express.json());
 
@@ -36,16 +34,13 @@ app.get("/", (req, res) => {
 
 app.get("/usuarios/:idUsuario", (req, res) => {
     Usuario.findById(req.params.idUsuario)
-        // .populate('experienciaProfesional')
-        .populate('habilidades')
-        // .populate('formaciones')
+        .populate('formaciones')
         .exec(function (err, usuario) {
             console.log(usuario)
             if (err) {
                 return res.json(err)
             }
             else {
-                console.log(usuario);
                 return res.json(usuario)
             }
         });
@@ -67,8 +62,7 @@ app.post("/signup", (req, res) => {
                 titulo: "",
                 habilidades: [],
                 contraseña: req.body.contrasena,
-                formaciones: [],
-                experienciaProfesional: []
+                formaciones: []
             });
 
             nuevoUsuario.save((err, usuario) => {
@@ -165,6 +159,14 @@ app.get("/trabajos/:idUsuario/:ubicacion/:nombreDelPuesto", (req, res) => {
     })
 })
 
+app.patch("/usuario/:id", function (req, res) {
+    var id = req.params.id;
+    var nuevasHabilidades = req.body.habilidades
+    console.log(nuevasHabilidades)
+    Usuario.findByIdAndUpdate(id, { habilidades: nuevasHabilidades }, function (err, usuario) {
+        return res.json({ usuario: { ...usuario, habilidades: nuevasHabilidades }, err })
+    });
+});
 
 app.post("/trabajos", (req, res) => {
     const nuevoTrabajo = new Trabajo({

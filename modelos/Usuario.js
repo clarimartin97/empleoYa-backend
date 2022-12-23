@@ -4,9 +4,8 @@ let schema = mongoose.Schema;
 let usuarioSchema = new schema({
     nombre: String,
     apellido: String,
-    experienciaProfesional: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Experiencia' }],
     formaciones: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Formacion' }],
-    habilidades: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Habilidades' }],
+    habilidades: [String],
     titulo: String,
     mail: String,
     contraseña: String
