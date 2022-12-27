@@ -92,6 +92,26 @@ app.post("/login", (req, res) => {
     })
 })
 
+app.post("/trabajo", (req, res) => {
+    console.log("hello")
+    console.log(req.body)
+
+
+    const nuevoTrabajo = new Trabajo({
+        nombreDelPuesto: req.body.nombreDelPuesto,
+        duracion: req.body.duracion,
+        ubicacion: req.body.ubicacion,
+        requisitos: req.body.requisitos,
+        descripcionDelPuesto: req.body.descripcionDelPuesto,
+        modalidad: req.body.modalidad,
+    });
+
+    nuevoTrabajo.save((err, trabajo) => {
+        console.log(err)
+        return res.json({ ...trabajo, error: err })
+    });
+})
+
 app.get("/trabajos/:idUsuario", (req, res) => {
     let idUsuario = req.params.idUsuario
     console.log(idUsuario)
@@ -121,7 +141,7 @@ app.get("/trabajos/:idUsuario", (req, res) => {
                     }
                 })
         }
-    })
+    }).sort({ createdAt: -1 })
 })
 
 app.get("/trabajos/:idUsuario/:ubicacion/:nombreDelPuesto", (req, res) => {
@@ -154,7 +174,7 @@ app.get("/trabajos/:idUsuario/:ubicacion/:nombreDelPuesto", (req, res) => {
                     }
                 })
         }
-    })
+    }).sort({ createdAt: -1 })
 })
 
 app.patch("/habilidades/:id", function (req, res) {
@@ -234,6 +254,7 @@ app.get("/postulaciones/:idUsuario", (req, res) => {
     console.log(idUsuario)
     Postulacion.find({ usuario: idUsuario })
         .populate('trabajo')
+        .sort({ createdAt: -1 })
         .exec(function (err, postulacion) {
             console.log(postulacion)
             if (err) {

@@ -5,12 +5,10 @@ let trabajoSchema = new schema({
     nombreDelPuesto: String,
     duracion: String,
     ubicacion: String,
-    nombreDeLaEmpresa: String,
     requisitos: String,
     descripcionDelPuesto: String,
-    trabajoActivo: Boolean,
     modalidad: String
-})
+}, { timestamps: true })
 let Trabajo = mongoose.model("Trabajo", trabajoSchema)
 
 module.exports = Trabajo;
